@@ -406,25 +406,6 @@
             <!-- Portfolio Actions -->
             <div class="portfolio-actions">
                 <div class="action-card">
-                    <h3>Make a Deposit</h3>
-                    <form id="depositForm">
-                        <div class="form-group">
-                            <label for="depositAmount">Amount ($)</label>
-                            <input type="number" id="depositAmount" class="form-control" placeholder="Enter amount" min="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="depositMethod">Payment Method</label>
-                            <select id="depositMethod" class="form-control" required>
-                                <option value="">Select payment method</option>
-                                <option value="bank">Bank Transfer</option>
-                                <option value="crypto">Cryptocurrency</option>
-                                <option value="card">Credit/Debit Card</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-success">Deposit Funds</button>
-                    </form>
-                </div>
-                <div class="action-card">
                     <h3>Request Withdrawal</h3>
                     <form id="withdrawalForm">
                         <div class="form-group">
@@ -643,24 +624,6 @@
         window.addEventListener('click', function(event) {
             if (event.target === withdrawalModal) {
                 withdrawalModal.classList.remove('show');
-            }
-        });
-
-        // Add deposit functionality (was missing in original)
-        const depositForm = document.getElementById('depositForm');
-        depositForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const depositAmountValue = parseFloat(document.getElementById('depositAmount').value);
-            const depositMethodValue = document.getElementById('depositMethod').value;
-            if (depositAmountValue >= 100 && depositMethodValue) {
-                userData.balance += depositAmountValue;
-                userData.investmentAmount += depositAmountValue;  // Optionally update total investments
-                localStorage.setItem('userData', JSON.stringify(userData));
-                updateBalance();
-                alert('Deposit successful!');
-                depositForm.reset();
-            } else {
-                alert('Please enter a valid amount (min $100) and select a method');
             }
         });
     </script>
