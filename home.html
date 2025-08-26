@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futures Trading - Smart Investments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .auth-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .auth-buttons {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 10px;
+            z-index: 100;
+        }
+        
+        .auth-buttons.show {
+            display: flex;
+        }
+        
+        .auth-button {
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            margin: 5px 0;
+        }
+        
+      
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 7px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            padding: 4rem 0;
+            background-color: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #2a5298;
+        }
+        
+        .plans {
+            padding: 4rem 0;
+            background-color: #f5f7fa;
+        }
+        
+        .plans-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .plan-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .plan-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-duration {
+            opacity: 0.9;
+        }
+        
+        .plan-body {
+            padding: 2rem;
+        }
+        
+        .plan-amount {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .plan-return {
+            background-color: #f0f4f8;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .return-percentage {
+            font-size: 1.8rem;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .invest-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .invest-button:hover {
+            background-color: #45a049;
+        }
+        
+        .amount-dropdown {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        .amount-option {
+            padding: 8px;
+            cursor: pointer;
+        }
+        
+        .amount-option:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .about {
+            padding: 4rem 0;
+            background-color: white;
+        }
+        
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .testimonials {
+            padding: 4rem 0;
+            background-color: #f5f7fa;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+        }
+        
+        footer {
+            background-color: #1e3c72;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            opacity: 0.8;
+        }
+        
+        .copyright {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .news-sidebar {
+            width: 300px;
+            height: 150px;
+            overflow: hidden;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 20px auto; /* Centered with auto margins */
+            position: relative; /* Changed from absolute to relative for centering */
+        }
+
+        .slider {
+            display: flex;
+            width: 900px;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            width: 300px;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        @media (min-width: 768px) {
+            .auth-buttons {
+                display: flex;
+                flex-direction: row;
+                position: static;
+                background: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+            
+            .auth-container {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+            }
+
+            .news-sidebar {
+                width: 400px; /* Slightly larger for desktop */
+                height: 200px; /* Slightly taller for desktop */
+                margin: 20px auto; /* Keep centered */
+            }
+
+            .slide {
+                width: 400px; /* Match sidebar width */
+                height: 200px; /* Match sidebar height */
+            }
+
+            .slider {
+                width: 1200px; /* Adjusted for three slides */
+            }
+        }
+
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 2rem;
+                margin-top: 20px;
+            }
+
+            .news-sidebar {
+                width: 250px; /* Smaller for mobile */
+                height: 120px; /* Smaller for mobile */
+                margin: 10px auto; /* Centered with smaller margin */
+            }
+
+            .slide {
+                width: 250px;
+                height: 120px;
+            }
+
+            .slider {
+                width: 750px; /* Adjusted for three slides */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+      
+        </div>
+        <div class="container">
+            <h1>Futures Trading</h1>
+            <p class="subtitle">Maximize your returns with our proven investment strategies</p>
+              <div class="news-sidebar">
+                <div class="slider">
+                    <img src="https://raw.githubusercontent.com/hopmos/webimage/main/picsart.png" alt="News Update 1" class="slide">
+                    <img src="https://raw.githubusercontent.com/hopmos/webimage/main/image2.jpeg" alt="News Update 2" class="slide">
+                    <img src="https://raw.githubusercontent.com/hopmos/webimage/main/image3.jpeg" alt="News Update 3" class="slide">
+                </div>
+            </div>
+        </div>
+    
+    
+    <div class="container">
+    <h1>Futures Trading</h1>
+    <p class="subtitle">Maximize your returns with our proven investment strategies</p>
+    <a href="#plans" class="cta-button">View Investment Plans</a>
+    <div class="news-sidebar">
+        <div class="slider">
+            <video src="https://raw.githubusercontent.com/hopmos/webimage/main/video1.mp4"  class="slide" autoplay loop muted></video>
+        </div>
+    </div>
+</div>
+    
+    
+    
+    
+    
+    
+    
+    </header>
+    
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>High Returns</h3>
+                    <p>Our expert traders deliver consistent profits through sophisticated market analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Platform</h3>
+                    <p>State-of-the-art security measures to protect your investments and personal data.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div 
+                    <h3>Fast Withdrawals</h3>
+                    <p>Get your profits quickly with our streamlined withdrawal process.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="plans" id="plans">
+        <div class="container">
+            <div class="plans-title">
+                <h2>Investment Plans</h2>
+                <p>Choose the plan that fits your financial goals</p>
+            </div>
+            
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Basic Plan</h3>
+                        <p class="plan-duration">7 Days Investment</p>
+                    </div>
+                    <div class="plan-body">
+                        <div class="plan-amount">
+                            <p>Investment Amounts:</p>
+                            <p>$5 | $10 | $15 | $20</p>
+                        </div>
+                        <div class="plan-return">
+                            <p>Daily Return:</p>
+                            <p class="return-percentage">5.72%</p>
+                            <p>Total Return after 7 days: 40%</p>
+                        </div>
+                        <p></p>
+                        <button class="invest-button" onclick="toggleDropdown('basic-dropdown')">Invest Now</button>
+                        <select class="amount-dropdown" id="basic-dropdown" onchange="redirectToPayment(this)">
+                            <option value="">Select Amount</option>
+                            <option value="5" data-link="$5.html">$5</option>
+                            <option value="10" data-link="$10.html">$10</option>
+                            <option value="15" data-link="$15.html">$15</option>
+                            <option value="20" data-link="$20.html">$20</option>
+                            
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Standard Plan</h3>
+                        <p class="plan-duration">14 Days Investment</p>
+                    </div>
+                    <div class="plan-body">
+                        <div class="plan-amount">
+                            <p>Investment Amounts:</p>
+                            <p>$30 | $40 | $50 | $60</p>
+                        </div>
+                        <div class="plan-return">
+                            <p>Daily Return:</p>
+                            <p class="return-percentage">7.15%</p>
+                            <p>Total Return after 14 days: 100%</p>
+                        </div>
+                        <p></p>
+                        <button class="invest-button" onclick="toggleDropdown('standard-dropdown')">Invest Now</button>
+                        <select class="amount-dropdown" id="standard-dropdown" onchange="redirectToPayment(this)">
+                            <option value="">Select Amount</option>
+                            <option value="30" data-link="$30.html">$30</option>
+                            <option value="40" data-link="$40.html">$40</option>
+                            <option value="50" data-link="#50.html">$50</option>
+                            <option value="60" data-link="$60.html">$60</option>
+                      
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Premium Plan</h3>
+                        <p class="plan-duration">30 Days Investment</p>
+                    </div>
+                    <div class="plan-body">
+                        <div class="plan-amount">
+                            <p>Investment Amounts:</p>
+                            <p>$70 | $80 | $90 | $100</p>
+                        </div>
+                        <div class="plan-return">
+                            <p>Daily Return:</p>
+                            <p class="return-percentage">9.17%</p>
+                            <p>Total Return after 30 days: 275%</p>
+                        </div>
+                        <p></p>
+                        <button class="invest-button" onclick="toggleDropdown('premium-dropdown')">Invest Now</button>
+                        <select class="amount-dropdown" id="premium-dropdown" onchange="redirectToPayment(this)">
+                            <option value="">Select Amount</option>
+                            <option value="70" data-link="$70.html">$70</option>
+                            <option value="80" data-link="$80.html">$80</option>
+                            <option value="90" data-link="$90.html">$90</option>
+                            <option value="100" data-link="$100.html">$100</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="about">
+        <div class="container">
+            <div class="about-content">
+                <h2>About Futures Trading</h2>
+                <p>Futures Trading is a leading investment platform specializing in commodities, currencies, and index futures. Our team of professional traders uses advanced algorithms and market analysis to generate consistent returns for our investors.</p>
+                <p>With years of experience in the financial markets, we've developed strategies that capitalize on market movements while managing risk effectively. Our transparent investment plans allow you to grow your wealth with confidence.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="testimonials">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">What Our Investors Say</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"I started with the Basic Plan and was amazed by the returns. Now I'm investing in the Premium Plan and my portfolio has grown significantly."</p>
+                    <p class="testimonial-author">- Michael T.</p>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The withdrawal process is incredibly fast. I received my profits within hours of requesting. Highly recommend Futures Trading!"</p>
+                    <p class="testimonial-author">- Sarah K.</p>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"As someone new to investing, I appreciate how simple and straightforward the platform is. The returns speak for themselves."</p>
+                    <p class="testimonial-author">- David R.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="terms of service.html" class="footer-link">Terms of Service</a>
+                <a href="privacy policy.html" class="footer-link">Privacy Policy</a>
+                <a href="mailto:futurestradinginvestment.org@gmail.com" class="footer-link">Contact Us</a>
+            </div>
+            <p class="copyright">© 2023 Futures Trading. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleAuthButtons() {
+            const authButtons = document.getElementById('authButtons');
+            authButtons.classList.toggle('show');
+        }
+        
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                // Hide all other dropdowns first
+                document.querySelectorAll('.amount-dropdown').forEach(dd => {
+                    dd.style.display = 'none';
+                });
+                // Show the selected dropdown
+                dropdown.style.display = 'block';
+            }
+        }
+        
+        function redirectToPayment(selectElement) {
+            if (selectElement.value) {
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const paymentLink = selectedOption.getAttribute('data-link');
+                if (paymentLink) {
+                    window.location.href = paymentLink;
+                }
+            }
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('.invest-button') && !event.target.matches('.amount-dropdown')) {
+                document.querySelectorAll('.amount-dropdown').forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+            
+            // Close auth buttons when clicking outside
+            if (!event.target.matches('.menu-toggle') && !event.target.closest('.auth-buttons')) {
+                document.getElementById('authButtons').classList.remove('show');
+            }
+        });
+
+        // News sidebar slider
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slider = document.querySelector('.slider');
+
+        function updateSlider() {
+            const slideWidth = slides[0].offsetWidth; // Get dynamic width of slide
+            slider.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+        }
+
+        function showNextSlide() {
+            slideIndex = (slideIndex + 1) % slides.length;
+            updateSlider();
+        }
+
+        // Initial adjustment for slider
+        window.addEventListener('resize', updateSlider); // Adjust on window resize
+        setInterval(showNextSlide, 5000); // Auto-slide every 5 seconds
+    </script>
+</body>
+</html>

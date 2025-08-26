@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Payment</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+            text-align: center;
+        }
+        .order-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .order-summary h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+        .payment-methods {
+            margin-bottom: 30px;
+        }
+        .payment-tabs {     
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .payment-tab {
+            padding: 10px 80px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+        }
+        .payment-tab.active {
+            border-bottom: 3px solid #3498db;
+            color: #3498db;
+        }
+        .payment-content {
+            display: none;
+        }
+        .payment-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+     
+        .crypto-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .crypto-option {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .crypto-option:hover {
+            border-color: #3498db;
+        }
+        .crypto-option.selected {
+            border-color: #3498db;
+            background-color: #eaf4fd;
+        }
+        .crypto-option img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+        .crypto-address {
+            margin-top: 20px;
+        }
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: #eee;
+            margin: 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .secure-note {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .secure-note i {
+            color: #27ae60;
+            margin-right: 5px;
+        }
+        .address-container {
+            display: flex;
+            align-items: center;
+        }
+        .copy-btn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .copy-btn:hover {
+            background: #2980b9;
+        }
+        .price-warning {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Your Payment</h1>
+        
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <p><strong>Description:</strong> Premium Plan Subscription</p>
+            <p><strong>Amount Due:</strong> $100 USD ~ NGN 150,000</p>
+        </div>
+        
+        <div class="payment-methods">
+            <div class="payment-tabs">
+                 <div class="payment-tab" onclick="openPaymentMethod('crypto')"><strong>Cryptocurrency</strong></div>
+            </div>
+            
+
+            <!-- Cryptocurrency Payment Method -->
+            <div id="crypto" class="payment-content">
+                <p>Select your preferred cryptocurrency:</p>
+                
+                <div class="crypto-options">
+                    <div class="crypto-option selected" onclick="selectCrypto('btc')">
+                        <img src="https://raw.githubusercontent.com/hopmos/webimage/main/btclogo.png" alt="Wrapped Bitcoin">
+                        <div>WBTC (BSC)</div>
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('eth')">
+                        <img src="https://raw.githubusercontent.com/hopmos/webimage/main/ethlogo.png" alt="Ethereum">
+                        <div>ETH (BSC)</div>
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('usdt')">
+                        <img src="https://raw.githubusercontent.com/hopmos/webimage/main/usdtlogo.png" alt="Tether">
+                        <div>USDT (BSC)</div>
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('usdc')">
+                        <img src="https://raw.githubusercontent.com/hopmos/webimage/main/usdclogo.png" alt="USDC">
+                        <div>USDC (BSC)</div>
+                    </div>
+                </div>
+                
+                <div class="crypto-address">
+                    <p><strong>Amount:</strong> <span id="crypto-amount">Loading...</span></p>
+                    <p><strong>Network:</strong> BNB Smart Chain</p>
+                    <p><strong>Send to address:</strong></p>
+                    <div class="address-container">
+                        <div id="crypto-address-value" style="flex: 1; background: #f0f0f0; padding: 10px; border-radius: 5px; word-break: break-all;">
+                            Loading...
+                        </div>
+                        <button class="copy-btn" onclick="copyAddress()">Copy</button>
+                    </div>
+                    <p id="price-warning" class="price-warning">Warning: Using estimated price due to API failure. Please verify the amount.</p>
+                    
+                    <p style="text-align: center; margin-top: 10px;">OR scan QR code:</p>
+                    <img id="qr-code" src="" alt="QR Code" style="display: block; margin: 15px auto; width: 150px; height: 150px;">
+                    
+                    <p style="font-size: 14px; color: #e74c3c;">
+                        <strong>Important:</strong> Send exact amount. Transactions may take 10-30 minutes to confirm.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="processPayment()">Complete Payment</button>
+        
+        <div class="secure-note">
+            <i>🔒</i> All payments are secure and encrypted
+        </div>
+    </div>
+
+    <script>
+        const AMOUNT_USD = 100;
+        const cryptoData = {
+            btc: {
+                id: 'wrapped-bitcoin',
+                address: '0x25d0b4A61fF875f5117BC32Da8315Dc2C4A2202D',
+                decimals: 8,
+                qrImage: 'https://raw.githubusercontent.com/hopmos/webimage/main/btcqr.png',
+                network: 'BNB Smart Chain'
+            },
+            eth: {
+                id: 'ethereum',
+                address: '0x25d0b4A61fF875f5117BC32Da8315Dc2C4A2202D',
+                decimals: 6,
+                qrImage: 'https://raw.githubusercontent.com/hopmos/webimage/main/ethqr.png',
+                network: 'BNB Smart Chain'
+            },
+            usdt: {
+                id: 'tether',
+                address: '0x25d0b4A61fF875f5117BC32Da8315Dc2C4A2202D',
+                decimals: 2,
+                qrImage: 'https://raw.githubusercontent.com/hopmos/webimage/main/usdtqr.png',
+                network: 'BNB Smart Chain'
+            },
+            usdc: {
+                id: 'usd-coin',
+                address: '0x25d0b4A61fF875f5117BC32Da8315Dc2C4A2202D',
+                decimals: 2,
+                qrImage: 'https://raw.githubusercontent.com/hopmos/webimage/main/usdcqr.png',
+                network: 'BNB Smart Chain'
+            }
+        };
+
+        const fallbackPrices = {
+            'wrapped-bitcoin': 60000,
+            'ethereum': 2500,
+            'tether': 1,
+            'usd-coin': 1
+        };
+
+        function openPaymentMethod(method) {
+            document.querySelectorAll('.payment-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(method).classList.add('active');
+            document.querySelectorAll('.payment-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        async function fetchCryptoPrice(cryptoId, retries = 2, delay = 1000) {
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                try {
+                    const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoId}&vs_currencies=usd`, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    if (!data[cryptoId] || !data[cryptoId].usd) {
+                        throw new Error(`Price data not available for ${cryptoId}`);
+                    }
+                    console.log(`Fetched price for ${cryptoId}: $${data[cryptoId].usd}`);
+                    return { price: data[cryptoId].usd, isFallback: false };
+                } catch (error) {
+                    console.error(`Attempt ${attempt} failed for ${cryptoId}:`, error);
+                    if (attempt === retries) {
+                        console.warn(`Using fallback price for ${cryptoId}`);
+                        return { price: fallbackPrices[cryptoId] || 1, isFallback: true };
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        async function selectCrypto(crypto) {
+            document.querySelectorAll('.crypto-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            const info = cryptoData[crypto];
+            document.getElementById('crypto-amount').innerText = 'Loading...';
+            document.getElementById('crypto-address-value').innerText = info.address;
+            document.getElementById('qr-code').src = info.qrImage;
+            document.getElementById('price-warning').style.display = 'none';
+
+            const { price, isFallback } = await fetchCryptoPrice(info.id);
+            const amountNum = 100 / price;
+            const amount = amountNum.toFixed(info.decimals) + ' ' + crypto.toUpperCase() + ' ($100.00)';
+            console.log(`Calculated amount for ${crypto.toUpperCase()}: ${amount} (Price: $${price})`);
+            document.getElementById('crypto-amount').innerText = amount;
+            if (isFallback) {
+                document.getElementById('price-warning').style.display = 'block';
+            }
+        }
+
+        function copyAddress() {
+            const address = document.getElementById('crypto-address-value').innerText;
+            navigator.clipboard.writeText(address).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy address: ' + err);
+            });
+        }
+
+        function processPayment() {
+            const activeTab = document.querySelector('.payment-tab.active').textContent;
+            alert(`Thank you! Your payment via ${activeTab} will be processed.`);
+        }
+
+        selectCrypto('btc');
+    </script>
+</body>
+</html>
