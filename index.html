@@ -67,13 +67,6 @@
             position: relative;
         }
         
-        .user-menu img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            cursor: pointer;
-        }
         
         .user-menu .username {
             cursor: pointer;
@@ -95,7 +88,7 @@
         
         .section-title {
             margin-bottom: 30px;
-            display: flex;
+            displa flex;
             justify-content: space-between;
             align-items: center;
         }
@@ -375,8 +368,7 @@
                     <span>Futures Trading Investment</span>
                 </div>
                 <div class="user-menu">
-                    <img src="https://raw.githubusercontent.com/hopmos/webimage/main/pp.png" alt="User Profile" id="userProfile">
-                    <span class="username">Elisha Ikon</span>
+                     <span class="username">Elisha Ikon</span>
                     <span class="account-id" id="accountId">ID: Loading...</span>
                 </div>
             </nav>
@@ -544,7 +536,6 @@
                     totalReturns: 0,
                     dailyProfit: (investmentAmount * returnPercentage) / 100,
                     accountId: userData.accountId || 'ID-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                    profilePicture: 'https://raw.githubusercontent.com/hopmos/webimage/main/pp.png',
                     investmentAmount: investmentAmount,
                     returnPercentage: returnPercentage,
                     investmentDays: investmentDays,
