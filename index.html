@@ -379,9 +379,28 @@
             color: #666;
             margin-bottom: 15px;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <!-- Static form for Netlify detection -->
+    <form name="withdrawal-form" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="form-name" value="withdrawal-form">
+        <input type="hidden" name="bot-field">
+        <input type="number" name="withdrawal-amount">
+        <select name="withdrawal-method">
+            <option value="crypto">Cryptocurrency</option>
+            <option value="bank">Bank Transfer</option>
+        </select>
+        <input type="text" name="usdt-address">
+        <input type="text" name="bank-name">
+        <input type="text" name="account-number">
+        <input type="text" name="account-name">
+    </form>
+
     <!-- Dashboard Header -->
     <header class="dashboard-header">
         <div class="container">
@@ -451,8 +470,9 @@
                 <div class="action-card" id="withdrawalCard" style="display: none;">
                     <h3>Withdraw Funds</h3>
                     <button class="btn btn-primary" id="withdrawBtn">Withdraw</button>
-                    <form id="withdrawalForm" name="withdrawal-form" data-netlify="true" method="post" style="display: none;">
-                        <input type="hidden" name="form-name" value="withdrawal-form" />
+                    <form id="withdrawalForm" name="withdrawal-form" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/">
+                        <input type="hidden" name="form-name" value="withdrawal-form">
+                        <input type="hidden" name="bot-field">
                         <label for="withdrawalAmount">Withdrawal Amount ($):</label>
                         <input type="number" id="withdrawalAmount" name="withdrawal-amount" min="0" step="0.01">
                         <select id="withdrawalMethod" name="withdrawal-method">
@@ -682,7 +702,7 @@
             });
         });
 
-        // Handle form submission with validation
+        // Handle form submission with validation and Netlify submission
         const withdrawalForm = document.getElementById('withdrawalForm');
         const errorMessage = document.getElementById('errorMessage');
         withdrawalForm.addEventListener('submit', function(e) {
@@ -728,15 +748,31 @@
                 }
             }
 
-            // If validation passes, update balance and submit form
+            // If validation passes, update balance
             userData.balance -= amount;
             localStorage.setItem('userData', JSON.stringify(userData));
             updateBalance(); // Update UI with new balance
-            errorMessage.textContent = '';
-            alert('Withdrawal request submitted. Please wait for processing.');
-            
-            // Submit form to Netlify
-            withdrawalForm.submit();
+
+            // Prepare form data for Netlify
+            const formData = new FormData(withdrawalForm);
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            })
+            .then(response => {
+                if (response.ok) {
+                    errorMessage.textContent = '';
+                    alert('Withdrawal request submitted. Please wait for processing.');
+                    window.location.reload(); // Redirect back to dashboard
+                } else {
+                    errorMessage.textContent = 'Error submitting withdrawal. Please try again.';
+                }
+            })
+            .catch(error => {
+                errorMessage.textContent = 'Error submitting withdrawal. Please try again.';
+                console.error('Form submission error:', error);
+            });
         });
 
         // Auto-update balance daily at midnight
