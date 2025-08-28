@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio | Futures Trading Investment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0056b3;
+            --secondary: #003366;
+            --accent: #00a8e8;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .user-menu .username {
+            cursor: pointer;
+        }
+        
+        .user-menu .account-id {
+            font-size: 14px;
+            margin-left: 10px;
+            color: #ddd;
+        }
+        
+        .admin-config {
+            display: none;
+        }
+        
+        .portfolio-section {
+            padding: 40px 0;
+        }
+        
+        .section-title {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title h2 {
+            font-size: 28px;
+            color: var(--secondary);
+        }
+        
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-card h3 {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card .amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .summary-card.profit .amount {
+            color: var(--success);
+        }
+        
+        .summary-card.loss .amount {
+            color: var(--danger);
+        }
+        
+        .portfolio-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .action-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .action-card h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #004494;
+        }
+        
+        .portfolio-holdings {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .holdings-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .holdings-header h3 {
+            font-size: 20px;
+            color: var(--secondary);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .profit {
+            color: var(--success);
+        }
+        
+        .loss {
+            color: var(--danger);
+        }
+        
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .chatbot-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chatbot-toggle:hover {
+            background-color: #004494;
+        }
+        
+        .chatbot-window {
+            display: none;
+            background-color: white;
+            width: 300px;
+            height: 500px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .chatbot-header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chatbot-body {
+            height: 320px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: var(--light);
+        }
+        
+        .chatbot-message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+        
+        .bot-message {
+            background-color: var(--primary);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .user-message {
+            background-color: #e9ecef;
+            color: var(--dark);
+            margin-right: auto;
+        }
+        
+        .chatbot-input {
+            display: flex;
+            border-top: 1px solid #eee;
+            padding: 10px;
+            background-color: white;
+        }
+        
+        .chatbot-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 14px;
+            width: 80px; /* Increased width for visibility */
+        }
+        
+        .chatbot-input input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+        }
+        
+        .chatbot-input button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .chatbot-input button:hover {
+            background-color: #004494;
+        }
+        
+        @media (max-width: 768px) {
+            .portfolio-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-menu {
+                margin-top: 15px;
+            }
+            
+            .chatbot-window {
+                width: 90%;
+                right: 5%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .portfolio-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        /* Additional styles for withdrawal form */
+        .action-card select,
+        .action-card input[type="text"],
+        .action-card input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .action-card label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .action-card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <nav class="dashboard-nav">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Futures Trading Investment</span>
+                </div>
+                <div class="user-menu">
+                    <span class="username">Uduak Umoren</span>
+                    <span class="account-id" id="accountId">ID: Loading...</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio-section">
+        <div class="container">
+            <!-- Hidden Admin Configuration - Edit these values to customize investments -->
+            <div class="admin-config">
+                <!-- 
+                    ADMIN CONTROLS:
+                    Edit these values to customize the investment parameters
+                    
+                    investmentAmount: Initial investment amount (default: 100)
+                    returnPercentage: Daily return percentage (default: 9.17)
+                    investmentDays: Duration of investment in days (default: 30)
+                    startDate: Start date of investment (default: 2025-08-27)
+                -->
+                <div id="investmentAmount" value="10"></div>
+                <div id="returnPercentage" value="5.72"></div>
+                <div id="investmentDays" value="7"></div>
+                <div id="startDate" value="2025-08-21"></div>
+            </div>
+            
+            <div class="section-title">
+                <h2>Account</h2>
+            </div>
+            
+            <!-- Portfolio Summary -->
+            <div class="portfolio-summary">
+                <div class="summary-card">
+                    <h3>Total Balance</h3>
+                    <div class="amount" id="totalBalance">$100.00</div>
+                </div>
+                <div class="summary-card profit">
+                    <h3>Today's Profit/Loss</h3>
+                    <div class="amount" id="todayProfit">$0.00</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Investments</h3>
+                    <div class="amount" id="totalInvestments">$100.00</div>
+                </div>
+                <div class="summary-card profit">
+                    <h3>Total Returns</h3>
+                    <div class="amount" id="totalReturns">$0.00</div>
+                </div>
+            </div>
+            
+            <!-- Portfolio Actions -->
+            <div class="portfolio-actions">
+                <div class="action-card">
+                    <h3>Deposit Funds</h3>
+                    <button class="btn btn-primary" id="depositBtn">Deposit</button>
+                </div>
+                <div class="action-card" id="withdrawalCard" style="display: none;">
+                    <h3>Withdraw Funds</h3>
+                    <button class="btn btn-primary" id="withdrawBtn">Withdraw</button>
+                    <form id="withdrawalForm" name="withdrawal-form" data-netlify="true" method="post" style="display: none;">
+                        <input type="hidden" name="form-name" value="withdrawal-form" />
+                        <label for="withdrawalAmount">Withdrawal Amount ($):</label>
+                        <input type="number" id="withdrawalAmount" name="withdrawal-amount" min="0" step="0.01">
+                        <select id="withdrawalMethod" name="withdrawal-method">
+                            <option value="">Select Withdrawal Method</option>
+                            <option value="crypto">Cryptocurrency</option>
+                            <option value="bank">Bank Transfer</option>
+                        </select>
+                        <div id="cryptoFields" style="display: none;">
+                            <label for="usdtAddress">Paste your USDT (BEP20) address:</label>
+                            <input type="text" id="usdtAddress" name="usdt-address">
+                        </div>
+                        <div id="bankFields" style="display: none;">
+                            <label for="bankName">Bank Name:</label>
+                            <input type="text" id="bankName" name="bank-name">
+                            <label for="accountNumber">Account Number:</label>
+                            <input type="text" id="accountNumber" name="account-number" pattern="[0-9]+" title="Account number must contain only digits">
+                            <label for="accountName">Account Name:</label>
+                            <input type="text" id="accountName" name="account-name">
+                            <p>Note: The name used for registration must match the withdrawal details.</p>
+                        </div>
+                        <div id="errorMessage" style="color: red; margin-bottom: 15px;"></div>
+                        <button class="btn btn-primary" type="submit">Submit Withdrawal</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Portfolio Holdings -->
+            <div class="portfolio-holdings">
+                <div class="holdings-header">
+                    <h3>Current Investments</h3>
+                    <button class="btn btn-primary">Invest More</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Amount</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Daily Return</th>
+                            <th>Total Return</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="investmentTable">
+                        <tr>
+                            <td>Basic Plan</td>
+                            <td id="investmentAmountDisplay">$100.00</td>
+                            <td id="startDateDisplay">2025-08-27</td>
+                            <td id="endDateDisplay">2025-09-27</td>
+                            <td class="profit" id="dailyReturn">$0.00</td>
+                            <td class="profit" id="totalInvestmentReturn">$0.00</td>
+                            <td><span id="investmentStatus">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" id="chatbotToggle" title="Open Chat">
+            <i class="fas fa-comment"></i>
+        </button>
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <span>Investment Assistant</span>
+                <button class="chatbot-toggle" id="chatbotClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chatbot-body" id="chatbotBody">
+                <div class="chatbot-message bot-message">Hello! How can I assist you today? Please enter a number to select an option:<br>1. FAQ<br>2. Balance<br>3. Today's Profit<br>4. Investment Period<br>5. Customer Service<br>6. Deposit<br>7. Withdrawal</div>
+            </div>
+            <div class="chatbot-input">
+                <input type="number" id="chatbotInput" placeholder="Enter 1-7" min="1" max="7">
+                <button id="chatbotSend">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get investment parameters from hidden admin configuration
+        const investmentAmount = parseFloat(document.getElementById('investmentAmount').getAttribute('value'));
+        const returnPercentage = parseFloat(document.getElementById('returnPercentage').getAttribute('value'));
+        const investmentDays = parseInt(document.getElementById('investmentDays').getAttribute('value'));
+        let startDate = document.getElementById('startDate').getAttribute('value');
+
+        // Create a config key to detect changes in admin config
+        const config = { investmentAmount, returnPercentage, investmentDays, startDate };
+        const configKey = JSON.stringify(config);
+
+        // Function to set start date to midnight of the specified date
+        function setStartDateToMidnight(dateStr) {
+            const date = new Date(dateStr);
+            date.setHours(0, 0, 0, 0); // Set to midnight
+            return date;
+        }
+
+        // Function to calculate days elapsed since start date
+        function calculateDaysElapsed(startDate) {
+            const now = new Date();
+            const start = setStartDateToMidnight(startDate);
+            const diffInMs = now - start;
+            const daysElapsed = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            return daysElapsed >= 0 ? daysElapsed : 0; // Ensure non-negative
+        }
+
+        // Function to calculate end date
+        function calculateEndDate(startDate, investmentDays) {
+            const start = setStartDateToMidnight(startDate);
+            const endDate = new Date(start);
+            endDate.setDate(start.getDate() + investmentDays);
+            return endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        }
+
+        // Function to format date
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toISOString().split('T')[0];
+        }
+
+        // Initialize user data or reset if admin config has changed
+        function initializeUserData() {
+            let userData = JSON.parse(localStorage.getItem('userData')) || {};
+            
+            // Check if admin config has changed
+            if (userData.configKey !== configKey) {
+                // Reset user data with new admin config
+                userData = {
+                    balance: investmentAmount,
+                    startDate: startDate,
+                    daysElapsed: calculateDaysElapsed(startDate),
+                    totalReturns: 0,
+                    dailyProfit: (investmentAmount * returnPercentage) / 100,
+                    accountId: userData.accountId || 'ID-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                    investmentAmount: investmentAmount,
+                    returnPercentage: returnPercentage,
+                    investmentDays: investmentDays,
+                    configKey: configKey
+                };
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
+            
+            return userData;
+        }
+
+        // Update balance and returns based on elapsed days
+        function updateBalance() {
+            let userData = initializeUserData();
+            
+            // Calculate days elapsed
+            userData.daysElapsed = calculateDaysElapsed(userData.startDate);
+            
+            // Determine if today is on or after the start date
+            const now = new Date();
+            const start = setStartDateToMidnight(userData.startDate);
+            const isAfterStartDate = now >= start;
+            
+            // Update total returns and balance only if on or after start date
+            if (isAfterStartDate && userData.daysElapsed <= userData.investmentDays) {
+                userData.totalReturns = userData.dailyProfit * userData.daysElapsed;
+                userData.balance = userData.investmentAmount + userData.totalReturns;
+            } else if (userData.daysElapsed > userData.investmentDays) {
+                userData.balance = userData.investmentAmount + (userData.dailyProfit * userData.investmentDays);
+                userData.totalReturns = userData.dailyProfit * userData.investmentDays;
+            } else {
+                // Before start date, set returns and daily profit to 0
+                userData.totalReturns = 0;
+                userData.balance = userData.investmentAmount;
+            }
+            
+            // Save updated user data
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Update UI
+            document.getElementById('totalBalance').textContent = `$${userData.balance.toFixed(2)}`;
+            document.getElementById('todayProfit').textContent = isAfterStartDate && userData.daysElapsed <= userData.investmentDays ? `$${userData.dailyProfit.toFixed(2)}` : '$0.00';
+            document.getElementById('totalInvestments').textContent = `$${userData.investmentAmount.toFixed(2)}`;
+            document.getElementById('totalReturns').textContent = `$${userData.totalReturns.toFixed(2)}`;
+            document.getElementById('investmentAmountDisplay').textContent = `$${userData.investmentAmount.toFixed(2)}`;
+            document.getElementById('startDateDisplay').textContent = formatDate(userData.startDate);
+            document.getElementById('endDateDisplay').textContent = calculateEndDate(userData.startDate, userData.investmentDays);
+            document.getElementById('dailyReturn').textContent = isAfterStartDate && userData.daysElapsed <= userData.investmentDays ? `$${userData.dailyProfit.toFixed(2)}` : '$0.00';
+            document.getElementById('totalInvestmentReturn').textContent = `$${userData.totalReturns.toFixed(2)}`;
+            document.getElementById('investmentStatus').textContent = isAfterStartDate && userData.daysElapsed <= userData.investmentDays ? 'Active' : (userData.daysElapsed > userData.investmentDays ? 'Completed' : 'Pending');
+            document.getElementById('accountId').textContent = `ID: ${userData.accountId}`;
+
+            // Show withdrawal card if investment period is over
+            if (userData.daysElapsed > userData.investmentDays) {
+                document.getElementById('withdrawalCard').style.display = 'block';
+            } else {
+                document.getElementById('withdrawalCard').style.display = 'none';
+            }
+        }
+
+        // Initialize user data and update balance on page load
+        let userData = initializeUserData();
+        updateBalance();
+
+        // Deposit button redirect
+        const depositBtn = document.getElementById('depositBtn');
+        depositBtn.addEventListener('click', function() {
+            window.location.href = 'home.html';
+        });
+
+        // Withdrawal button to show form
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        withdrawBtn.addEventListener('click', function() {
+            document.getElementById('withdrawBtn').style.display = 'none';
+            document.getElementById('withdrawalForm').style.display = 'block';
+        });
+
+        // Handle withdrawal method change
+        const methodSelect = document.getElementById('withdrawalMethod');
+        methodSelect.addEventListener('change', function() {
+            const value = this.value;
+            document.getElementById('cryptoFields').style.display = value === 'crypto' ? 'block' : 'none';
+            document.getElementById('bankFields').style.display = value === 'bank' ? 'block' : 'none';
+            document.getElementById('errorMessage').textContent = ''; // Clear error message on method change
+        });
+
+        // Clear error message on input change
+        const inputs = document.querySelectorAll('#withdrawalForm input, #withdrawalForm select');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                document.getElementById('errorMessage').textContent = '';
+            });
+        });
+
+        // Handle form submission with validation
+        const withdrawalForm = document.getElementById('withdrawalForm');
+        const errorMessage = document.getElementById('errorMessage');
+        withdrawalForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission to handle validation first
+
+            const amount = parseFloat(document.getElementById('withdrawalAmount').value);
+            const method = document.getElementById('withdrawalMethod').value;
+
+            // Validate withdrawal amount
+            if (isNaN(amount) || amount <= 0 || amount > userData.balance) {
+                errorMessage.textContent = 'Invalid withdrawal amount. It must be greater than 0 and not exceed your total balance.';
+                return;
+            }
+
+            // Validate withdrawal method
+            if (!method) {
+                errorMessage.textContent = 'Please select a withdrawal method.';
+                return;
+            }
+
+            // Validate crypto fields
+            if (method === 'crypto') {
+                const address = document.getElementById('usdtAddress').value.trim();
+                if (!address) {
+                    errorMessage.textContent = 'Please enter your USDT (BEP20) address.';
+                    return;
+                }
+            }
+
+            // Validate bank fields
+            if (method === 'bank') {
+                const bankName = document.getElementById('bankName').value.trim();
+                const accountNumber = document.getElementById('accountNumber').value.trim();
+                const accountName = document.getElementById('accountName').value.trim();
+                if (!bankName || !accountNumber || !accountName) {
+                    errorMessage.textContent = 'Please fill in all bank details.';
+                    return;
+                }
+                // Validate account number is numeric
+                if (!/^\d+$/.test(accountNumber)) {
+                    errorMessage.textContent = 'Account number must contain only digits.';
+                    return;
+                }
+            }
+
+            // If validation passes, update balance and submit form
+            userData.balance -= amount;
+            localStorage.setItem('userData', JSON.stringify(userData));
+            updateBalance(); // Update UI with new balance
+            errorMessage.textContent = '';
+            alert('Withdrawal request submitted. Please wait for processing.');
+            
+            // Submit form to Netlify
+            withdrawalForm.submit();
+        });
+
+        // Auto-update balance daily at midnight
+        function scheduleDailyUpdate() {
+            const now = new Date();
+            const midnight = new Date();
+            midnight.setDate(now.getDate() + 1);
+            midnight.setHours(0, 0, 0, 0);
+            const timeToMidnight = midnight - now;
+            
+            setTimeout(() => {
+                updateBalance();
+                setInterval(updateBalance, 24 * 60 * 60 * 1000); // Update every 24 hours
+            }, timeToMidnight);
+        }
+
+        scheduleDailyUpdate();
+
+        // Chatbot Functionality
+        const chatbotToggle = document.getElementById('chatbotToggle');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatbotClose = document.getElementById('chatbotClose');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotSend = document.getElementById('chatbotSend');
+        const chatbotBody = document.getElementById('chatbotBody');
+
+        // Toggle chatbot window and focus input
+        chatbotToggle.addEventListener('click', () => {
+            chatbotWindow.style.display = chatbotWindow.style.display === 'block' ? 'none' : 'block';
+            if (chatbotWindow.style.display === 'block') {
+                // Reset chat with welcome message
+                chatbotBody.innerHTML = '<div class="chatbot-message bot-message">Hello! How can I assist you today? Please enter a number to select an option:<br>1. FAQ<br>2. Balance<br>3. Today\'s Profit<br>4. Investment Period<br>5. Customer Service<br>6. Deposit<br>7. Withdrawal</div>';
+                chatbotInput.focus(); // Auto-focus input
+            }
+        });
+
+        chatbotClose.addEventListener('click', () => {
+            chatbotWindow.style.display = 'none';
+        });
+
+        // Function to add message to chat
+        function addMessage(content, type) {
+            const message = document.createElement('div');
+            message.classList.add('chatbot-message', type);
+            message.innerHTML = content.replace(/\n/g, '<br>'); // Support line breaks
+            chatbotBody.appendChild(message);
+            chatbotBody.scrollTop = chatbotBody.scrollHeight;
+        }
+
+        // Function to handle user input
+        function handleUserInput() {
+            const userInput = chatbotInput.value.trim();
+            console.log('User input:', userInput); // Debug log
+            if (!userInput || isNaN(userInput) || userInput < 1 || userInput > 7) {
+                addMessage('Please enter a valid number between 1 and 7.', 'bot-message');
+                chatbotInput.value = '';
+                chatbotInput.focus();
+                return;
+            }
+
+            // Add user message
+            addMessage(userInput, 'user-message');
+            chatbotInput.value = '';
+
+            // Get current user data
+            let userData = JSON.parse(localStorage.getItem('userData')) || {};
+            const isAfterStartDate = new Date() >= setStartDateToMidnight(userData.startDate);
+            const status = isAfterStartDate && userData.daysElapsed <= userData.investmentDays ? 'Active' : (userData.daysElapsed > userData.investmentDays ? 'Completed' : 'Pending');
+
+            // Define responses
+            const faqResponse = `Frequently Asked Questions:\n1. What is Futures Trading Investment? - A platform to invest in futures with daily returns.\n2. How are profits calculated? - Daily profit is ${userData.returnPercentage}% of your investment.\n3. When does my investment start? - It starts at midnight on ${formatDate(userData.startDate)}.\n4. Can I withdraw funds? - Contact customer service for withdrawal details.\nType a number (1-7) to return to the main menu.`;
+
+            const responses = {
+                '1': faqResponse,
+                '2': `Your current balance is $${userData.balance.toFixed(2)}.\nType a number (1-7) to return to the main menu.`,
+                '3': isAfterStartDate && userData.daysElapsed <= userData.investmentDays 
+                    ? `Today's profit is $${userData.dailyProfit.toFixed(2)}.\nType a number (1-7) to return to the main menu.` 
+                    : `No profit yet. Your investment starts on ${formatDate(userData.startDate)}.\nType a number (1-7) to return to the main menu.`,
+                '4': `Your investment period is from ${formatDate(userData.startDate)} to ${calculateEndDate(userData.startDate, userData.investmentDays)}. Status: ${status}.\nType a number (1-7) to return to the main menu.`,
+                '5': `For customer service, please email futurestrdinginvestment.org@gmail.com or call +234-805-363-4544.\nType a number (1-7) to return to the main menu.`,
+                '6': () => {
+                    addMessage('Redirecting to deposit page...', 'bot-message');
+                    setTimeout(() => window.location.href = 'home.html', 1000);
+                    return '';
+                },
+                '7': () => {
+                    let message;
+                    if (userData.daysElapsed > userData.investmentDays) {
+                        message = 'Your investment period is over. You can now use the Withdraw button to request a withdrawal.';
+                    } else {
+                        message = `The withdrawal button will appear after your investment period ends on ${calculateEndDate(userData.startDate, userData.investmentDays)}. Please check back then.`;
+                    }
+                    message += '\nType a number (1-7) to return to the main menu.';
+                    return message;
+                }
+            };
+
+            // Get response
+            const response = typeof responses[userInput] === 'function' ? responses[userInput]() : responses[userInput];
+            if (response) addMessage(response, 'bot-message');
+            chatbotInput.focus(); // Re-focus input after response
+        }
+
+        // Send message on button click
+        chatbotSend.addEventListener('click', handleUserInput);
+
+        // Send message on Enter key
+        chatbotInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleUserInput();
+        });
+    </script>
+</body>
+</html>
