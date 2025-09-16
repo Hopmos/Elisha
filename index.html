@@ -214,7 +214,6 @@
             color: var(--danger);
         }
         
-        /* Chatbot Styles */
         .chatbot-container {
             position: fixed;
             bottom: 20px;
@@ -303,7 +302,7 @@
             border-radius: 4px;
             margin-right: 10px;
             font-size: 14px;
-            width: 80px; /* Increased width for visibility */
+            width: 80px;
         }
         
         .chatbot-input input:focus {
@@ -356,7 +355,6 @@
             }
         }
 
-        /* Additional styles for withdrawal form */
         .action-card select,
         .action-card input[type="text"],
         .action-card input[type="number"] {
@@ -399,6 +397,9 @@
         <input type="text" name="bank-name">
         <input type="text" name="account-number">
         <input type="text" name="account-name">
+        <input type="number" name="withdrawal-fee-percentage">
+        <input type="number" name="withdrawal-fee">
+        <input type="number" name="net-amount">
     </form>
 
     <!-- Dashboard Header -->
@@ -420,17 +421,8 @@
     <!-- Portfolio Section -->
     <section class="portfolio-section">
         <div class="container">
-            <!-- Hidden Admin Configuration - Edit these values to customize investments -->
+            <!-- Hidden Admin Configuration -->
             <div class="admin-config">
-                <!-- 
-                    ADMIN CONTROLS:
-                    Edit these values to customize the investment parameters
-                    
-                    investmentAmount: Initial investment amount (default: 100)
-                    returnPercentage: Daily return percentage (default: 9.17)
-                    investmentDays: Duration of investment in days (default: 30)
-                    startDate: Start date of investment (default: 2025-08-27)
-                -->
                 <div id="investmentAmount" value="50"></div>
                 <div id="returnPercentage" value="7.15"></div>
                 <div id="investmentDays" value="14"></div>
@@ -445,7 +437,7 @@
             <div class="portfolio-summary">
                 <div class="summary-card">
                     <h3>Total Balance</h3>
-                    <div class="amount" id="totalBalance">$100.00</div>
+                    <div class="amount" id="totalBalance">$262.57</div>
                 </div>
                 <div class="summary-card profit">
                     <h3>Today's Profit/Loss</h3>
@@ -453,11 +445,11 @@
                 </div>
                 <div class="summary-card">
                     <h3>Total Investments</h3>
-                    <div class="amount" id="totalInvestments">$100.00</div>
+                    <div class="amount" id="totalInvestments">$70.00</div>
                 </div>
                 <div class="summary-card profit">
                     <h3>Total Returns</h3>
-                    <div class="amount" id="totalReturns">$0.00</div>
+                    <div class="amount" id="totalReturns">$192.57</div>
                 </div>
             </div>
             
@@ -475,6 +467,7 @@
                         <input type="hidden" name="bot-field">
                         <label for="withdrawalAmount">Withdrawal Amount ($):</label>
                         <input type="number" id="withdrawalAmount" name="withdrawal-amount" min="0" step="0.01">
+                        <p id="netAmountMessage" style="font-size: 14px; color: #666; margin-bottom: 15px;"></p>
                         <select id="withdrawalMethod" name="withdrawal-method">
                             <option value="">Select Withdrawal Method</option>
                             <option value="crypto">Cryptocurrency</option>
@@ -520,12 +513,12 @@
                     <tbody id="investmentTable">
                         <tr>
                             <td>Standard Plan</td>
-                            <td id="investmentAmountDisplay">$100.00</td>
-                            <td id="startDateDisplay">2025-08-27</td>
-                            <td id="endDateDisplay">2025-09-27</td>
-                            <td class="profit" id="dailyReturn">$0.00</td>
-                            <td class="profit" id="totalInvestmentReturn">$0.00</td>
-                            <td><span id="investmentStatus">Active</span></td>
+                            <td id="investmentAmountDisplay">$70.00</td>
+                            <td id="startDateDisplay">2025-07-17</td>
+                            <td id="endDateDisplay">2025-08-16</td>
+                            <td class="profit" id="dailyReturn">$6.42</td>
+                            <td class="profit" id="totalInvestmentReturn">$192.57</td>
+                            <td><span id="investmentStatus">Completed</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -554,100 +547,112 @@
     </div>
 
     <script>
-        // Get investment parameters from hidden admin configuration
+        // Get investment parameters
         const investmentAmount = parseFloat(document.getElementById('investmentAmount').getAttribute('value'));
         const returnPercentage = parseFloat(document.getElementById('returnPercentage').getAttribute('value'));
         const investmentDays = parseInt(document.getElementById('investmentDays').getAttribute('value'));
         let startDate = document.getElementById('startDate').getAttribute('value');
 
-        // Create a config key to detect changes in admin config
+        // Create config key
         const config = { investmentAmount, returnPercentage, investmentDays, startDate };
         const configKey = JSON.stringify(config);
 
-        // Function to set start date to midnight of the specified date
+        // Set start date to midnight
         function setStartDateToMidnight(dateStr) {
             const date = new Date(dateStr);
-            date.setHours(0, 0, 0, 0); // Set to midnight
+            date.setHours(0, 0, 0, 0);
             return date;
         }
 
-        // Function to calculate days elapsed since start date
+        // Calculate days elapsed
         function calculateDaysElapsed(startDate) {
             const now = new Date();
             const start = setStartDateToMidnight(startDate);
             const diffInMs = now - start;
             const daysElapsed = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-            return daysElapsed >= 0 ? daysElapsed : 0; // Ensure non-negative
+            return daysElapsed >= 0 ? daysElapsed : 0;
         }
 
-        // Function to calculate end date
+        // Calculate end date
         function calculateEndDate(startDate, investmentDays) {
             const start = setStartDateToMidnight(startDate);
             const endDate = new Date(start);
             endDate.setDate(start.getDate() + investmentDays);
-            return endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            return endDate.toISOString().split('T')[0];
         }
 
-        // Function to format date
+        // Format date
         function formatDate(dateStr) {
             const date = new Date(dateStr);
             return date.toISOString().split('T')[0];
         }
 
-        // Initialize user data or reset if admin config has changed
+        // Initialize user data
         function initializeUserData() {
             let userData = JSON.parse(localStorage.getItem('userData')) || {};
-            
-            // Check if admin config has changed
-            if (userData.configKey !== configKey) {
-                // Reset user data with new admin config
+            console.log('Initializing userData:', userData);
+
+            // Reset balance if invalid or config changed
+            if (userData.configKey !== configKey || !userData.balance || userData.balance < investmentAmount) {
+                console.log('Invalid balance or config changed, resetting userData');
+                const daysElapsed = calculateDaysElapsed(startDate);
+                const dailyProfit = (investmentAmount * returnPercentage) / 100;
+                let totalReturns = 0;
+                let balance = investmentAmount;
+
+                if (daysElapsed >= investmentDays) {
+                    totalReturns = dailyProfit * investmentDays;
+                    balance = investmentAmount + totalReturns;
+                } else if (daysElapsed > 0) {
+                    totalReturns = dailyProfit * daysElapsed;
+                    balance = investmentAmount + totalReturns;
+                }
+
                 userData = {
-                    balance: investmentAmount,
+                    balance: balance,
                     startDate: startDate,
-                    daysElapsed: calculateDaysElapsed(startDate),
-                    totalReturns: 0,
-                    dailyProfit: (investmentAmount * returnPercentage) / 100,
+                    daysElapsed: daysElapsed,
+                    totalReturns: totalReturns,
+                    dailyProfit: dailyProfit,
                     accountId: userData.accountId || 'ID-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
                     investmentAmount: investmentAmount,
                     returnPercentage: returnPercentage,
                     investmentDays: investmentDays,
                     configKey: configKey
                 };
+                console.log('Reset userData:', userData);
                 localStorage.setItem('userData', JSON.stringify(userData));
             }
             
             return userData;
         }
 
-        // Update balance and returns based on elapsed days
+        // Update balance and UI
         function updateBalance() {
             let userData = initializeUserData();
             
-            // Calculate days elapsed
             userData.daysElapsed = calculateDaysElapsed(userData.startDate);
+            console.log('Days elapsed:', userData.daysElapsed, 'Investment days:', userData.investmentDays);
             
-            // Determine if today is on or after the start date
             const now = new Date();
             const start = setStartDateToMidnight(userData.startDate);
             const isAfterStartDate = now >= start;
             
-            // Update total returns and balance only if on or after start date
             if (isAfterStartDate && userData.daysElapsed <= userData.investmentDays) {
                 userData.totalReturns = userData.dailyProfit * userData.daysElapsed;
                 userData.balance = userData.investmentAmount + userData.totalReturns;
             } else if (userData.daysElapsed > userData.investmentDays) {
-                userData.balance = userData.investmentAmount + (userData.dailyProfit * userData.investmentDays);
                 userData.totalReturns = userData.dailyProfit * userData.investmentDays;
+                userData.balance = userData.investmentAmount + userData.totalReturns;
             } else {
-                // Before start date, set returns and daily profit to 0
                 userData.totalReturns = 0;
                 userData.balance = userData.investmentAmount;
             }
             
-            // Save updated user data
+            console.log('Updated balance:', userData.balance, 'Total returns:', userData.totalReturns);
             localStorage.setItem('userData', JSON.stringify(userData));
+            console.log('Stored userData:', JSON.parse(localStorage.getItem('userData')));
             
-            // Update UI
             document.getElementById('totalBalance').textContent = `$${userData.balance.toFixed(2)}`;
             document.getElementById('todayProfit').textContent = isAfterStartDate && userData.daysElapsed <= userData.investmentDays ? `$${userData.dailyProfit.toFixed(2)}` : '$0.00';
             document.getElementById('totalInvestments').textContent = `$${userData.investmentAmount.toFixed(2)}`;
@@ -660,22 +665,27 @@
             document.getElementById('investmentStatus').textContent = isAfterStartDate && userData.daysElapsed <= userData.investmentDays ? 'Active' : (userData.daysElapsed > userData.investmentDays ? 'Completed' : 'Pending');
             document.getElementById('accountId').textContent = `ID: ${userData.accountId}`;
 
-            // Show withdrawal card if investment period is over
-            if (userData.daysElapsed > userData.investmentDays) {
-                document.getElementById('withdrawalCard').style.display = 'block';
-            } else {
-                document.getElementById('withdrawalCard').style.display = 'none';
-            }
+            // Show withdrawal card only if investment period is over
+            document.getElementById('withdrawalCard').style.display = userData.daysElapsed > userData.investmentDays ? 'block' : 'none';
         }
 
-        // Initialize user data and update balance on page load
+        // Deduct withdrawal amount
+        function deductWithdrawal(amount) {
+            userData.balance -= amount;
+            console.log('Balance after withdrawal:', userData.balance);
+            localStorage.setItem('userData', JSON.stringify(userData));
+            updateBalance();
+            console.log('Stored userData after deduction:', JSON.parse(localStorage.getItem('userData')));
+        }
+
+        // Initialize and update balance
         let userData = initializeUserData();
         updateBalance();
 
-        // Deposit button redirect
+        // Deposit button
         const depositBtn = document.getElementById('depositBtn');
         depositBtn.addEventListener('click', function() {
-            window.location.href = 'home.html';
+            window.location.href = 'index.html';
         });
 
         // Withdrawal button to show form
@@ -691,29 +701,67 @@
             const value = this.value;
             document.getElementById('cryptoFields').style.display = value === 'crypto' ? 'block' : 'none';
             document.getElementById('bankFields').style.display = value === 'bank' ? 'block' : 'none';
-            document.getElementById('errorMessage').textContent = ''; // Clear error message on method change
+            document.getElementById('errorMessage').textContent = '';
         });
 
-        // Clear error message on input change
-        const inputs = document.querySelectorAll('#withdrawalForm input, #withdrawalForm select');
+        // Get withdrawal fee percentage
+        function getWithdrawalFeePercentage() {
+            const plan = document.querySelector('#investmentTable td').textContent.trim().toLowerCase();
+            if (plan.includes('premium')) {
+                return 15;
+            } else if (plan.includes('basic')) {
+                return 5;
+            } else {
+                return 10;
+            }
+        }
+
+        // Update net amount message
+        const withdrawalAmountInput = document.getElementById('withdrawalAmount');
+        withdrawalAmountInput.addEventListener('input', function() {
+            const amount = parseFloat(this.value);
+            const errorMessage = document.getElementById('errorMessage');
+            const netAmountMessage = document.getElementById('netAmountMessage');
+            errorMessage.textContent = '';
+
+            if (isNaN(amount) || amount <= 0) {
+                netAmountMessage.textContent = '';
+                return;
+            }
+
+            const withdrawalFeePercentage = getWithdrawalFeePercentage();
+            const withdrawalFee = amount * (withdrawalFeePercentage / 100);
+            const netAmount = amount - withdrawalFee;
+
+            if (netAmount <= 0) {
+                netAmountMessage.textContent = `Net amount after ${withdrawalFeePercentage}% fee: $0.00 (Amount too low)`;
+            } else {
+                netAmountMessage.textContent = `Net amount after ${withdrawalFeePercentage}% fee: $${netAmount.toFixed(2)}`;
+            }
+        });
+
+        // Clear error message on input changes
+        const inputs = document.querySelectorAll('#withdrawalForm input:not(#withdrawalAmount), #withdrawalForm select');
         inputs.forEach(input => {
             input.addEventListener('input', () => {
                 document.getElementById('errorMessage').textContent = '';
             });
         });
 
-        // Handle form submission with validation and Netlify submission
+        // Handle form submission
         const withdrawalForm = document.getElementById('withdrawalForm');
         const errorMessage = document.getElementById('errorMessage');
-        withdrawalForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent default form submission to handle validation first
+        withdrawalForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
             const amount = parseFloat(document.getElementById('withdrawalAmount').value);
             const method = document.getElementById('withdrawalMethod').value;
 
+            console.log('Current balance before withdrawal:', userData.balance);
+
             // Validate withdrawal amount
             if (isNaN(amount) || amount <= 0 || amount > userData.balance) {
-                errorMessage.textContent = 'Invalid withdrawal amount. It must be greater than 0 and not exceed your total balance.';
+                errorMessage.textContent = `Invalid withdrawal amount. It must be greater than 0 and not exceed your total balance ($${userData.balance.toFixed(2)}).`;
                 return;
             }
 
@@ -741,41 +789,63 @@
                     errorMessage.textContent = 'Please fill in all bank details.';
                     return;
                 }
-                // Validate account number is numeric
                 if (!/^\d+$/.test(accountNumber)) {
                     errorMessage.textContent = 'Account number must contain only digits.';
                     return;
                 }
             }
 
-            // If validation passes, update balance
-            userData.balance -= amount;
-            localStorage.setItem('userData', JSON.stringify(userData));
-            updateBalance(); // Update UI with new balance
+            // Calculate fee and net amount
+            const withdrawalFeePercentage = getWithdrawalFeePercentage();
+            const withdrawalFee = amount * (withdrawalFeePercentage / 100);
+            const netAmount = amount - withdrawalFee;
 
-            // Prepare form data for Netlify
+            if (netAmount <= 0) {
+                errorMessage.textContent = `The withdrawal amount after a ${withdrawalFeePercentage}% fee is too low. Please enter a higher amount.`;
+                return;
+            }
+
+            // Confirm withdrawal
+            const confirmWithdrawal = confirm(`You are withdrawing $${amount.toFixed(2)}. A ${withdrawalFeePercentage}% fee ($${withdrawalFee.toFixed(2)}) will be deducted. You will receive $${netAmount.toFixed(2)}. Proceed?`);
+            if (!confirmWithdrawal) {
+                errorMessage.textContent = 'Withdrawal cancelled.';
+                return;
+            }
+
+            // Prepare form data
             const formData = new FormData(withdrawalForm);
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            })
-            .then(response => {
+            formData.append('withdrawal-fee-percentage', withdrawalFeePercentage);
+            formData.append('withdrawal-fee', withdrawalFee.toFixed(2));
+            formData.append('net-amount', netAmount.toFixed(2));
+
+            // Convert FormData to URL-encoded string
+            const formBody = new URLSearchParams(formData).toString();
+            console.log('Form data:', formBody);
+
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formBody
+                });
+
                 if (response.ok) {
+                    // Deduct balance only on successful submission
+                    deductWithdrawal(amount);
                     errorMessage.textContent = '';
-                    alert('Withdrawal request submitted. Please wait for processing.');
-                    window.location.reload(); // Redirect back to dashboard
+                    alert(`Withdrawal request submitted. You will receive $${netAmount.toFixed(2)} after a $${withdrawalFee.toFixed(2)} (${withdrawalFeePercentage}%) fee. Please wait for processing.`);
+                    setTimeout(() => window.location.reload(), 1000); // Delay for UI update
                 } else {
-                    errorMessage.textContent = 'Error submitting withdrawal. Please try again.';
+                    errorMessage.textContent = `Error submitting withdrawal. Server responded with status ${response.status}: ${response.statusText}. Please try again.`;
+                    console.error('Submission failed:', response.status, response.statusText);
                 }
-            })
-            .catch(error => {
-                errorMessage.textContent = 'Error submitting withdrawal. Please try again.';
-                console.error('Form submission error:', error);
-            });
+            } catch (error) {
+                errorMessage.textContent = 'Error submitting withdrawal. Please check your connection and try again.';
+                console.error('Form submission error:', error.message, error.stack);
+            }
         });
 
-        // Auto-update balance daily at midnight
+        // Schedule daily balance update
         function scheduleDailyUpdate() {
             const now = new Date();
             const midnight = new Date();
@@ -785,7 +855,7 @@
             
             setTimeout(() => {
                 updateBalance();
-                setInterval(updateBalance, 24 * 60 * 60 * 1000); // Update every 24 hours
+                setInterval(updateBalance, 24 * 60 * 60 * 1000);
             }, timeToMidnight);
         }
 
@@ -799,13 +869,11 @@
         const chatbotSend = document.getElementById('chatbotSend');
         const chatbotBody = document.getElementById('chatbotBody');
 
-        // Toggle chatbot window and focus input
         chatbotToggle.addEventListener('click', () => {
             chatbotWindow.style.display = chatbotWindow.style.display === 'block' ? 'none' : 'block';
             if (chatbotWindow.style.display === 'block') {
-                // Reset chat with welcome message
                 chatbotBody.innerHTML = '<div class="chatbot-message bot-message">Hello! How can I assist you today? Please enter a number to select an option:<br>1. FAQ<br>2. Balance<br>3. Today\'s Profit<br>4. Investment Period<br>5. Customer Service<br>6. Deposit<br>7. Withdrawal</div>';
-                chatbotInput.focus(); // Auto-focus input
+                chatbotInput.focus();
             }
         });
 
@@ -813,19 +881,17 @@
             chatbotWindow.style.display = 'none';
         });
 
-        // Function to add message to chat
         function addMessage(content, type) {
             const message = document.createElement('div');
             message.classList.add('chatbot-message', type);
-            message.innerHTML = content.replace(/\n/g, '<br>'); // Support line breaks
+            message.innerHTML = content.replace(/\n/g, '<br>');
             chatbotBody.appendChild(message);
             chatbotBody.scrollTop = chatbotBody.scrollHeight;
         }
 
-        // Function to handle user input
         function handleUserInput() {
             const userInput = chatbotInput.value.trim();
-            console.log('User input:', userInput); // Debug log
+            console.log('User input:', userInput);
             if (!userInput || isNaN(userInput) || userInput < 1 || userInput > 7) {
                 addMessage('Please enter a valid number between 1 and 7.', 'bot-message');
                 chatbotInput.value = '';
@@ -833,17 +899,16 @@
                 return;
             }
 
-            // Add user message
             addMessage(userInput, 'user-message');
             chatbotInput.value = '';
 
-            // Get current user data
             let userData = JSON.parse(localStorage.getItem('userData')) || {};
             const isAfterStartDate = new Date() >= setStartDateToMidnight(userData.startDate);
             const status = isAfterStartDate && userData.daysElapsed <= userData.investmentDays ? 'Active' : (userData.daysElapsed > userData.investmentDays ? 'Completed' : 'Pending');
 
-            // Define responses
-            const faqResponse = `Frequently Asked Questions:\n1. What is Futures Trading Investment? - A platform to invest in futures with daily returns.\n2. How are profits calculated? - Daily profit is ${userData.returnPercentage}% of your investment.\n3. When does my investment start? - It starts at midnight on ${formatDate(userData.startDate)}.\n4. Can I withdraw funds? - Contact customer service for withdrawal details.\nType a number (1-7) to return to the main menu.`;
+            const withdrawalFeePercentage = getWithdrawalFeePercentage();
+
+            const faqResponse = `Frequently Asked Questions:\n1. What is Futures Trading Investment? - A platform to invest in futures with daily returns.\n2. How are profits calculated? - Daily profit is ${userData.returnPercentage}% of your investment.\n3. When does my investment start? - It starts at midnight on ${formatDate(userData.startDate)}.\n4. Can I withdraw funds? - A ${withdrawalFeePercentage}% withdrawal fee applies. Contact customer service for details.\nType a number (1-7) to return to the main menu.`;
 
             const responses = {
                 '1': faqResponse,
@@ -852,34 +917,30 @@
                     ? `Today's profit is $${userData.dailyProfit.toFixed(2)}.\nType a number (1-7) to return to the main menu.` 
                     : `No profit yet. Your investment starts on ${formatDate(userData.startDate)}.\nType a number (1-7) to return to the main menu.`,
                 '4': `Your investment period is from ${formatDate(userData.startDate)} to ${calculateEndDate(userData.startDate, userData.investmentDays)}. Status: ${status}.\nType a number (1-7) to return to the main menu.`,
-                '5': `For customer service, please email futurestrdinginvestment.org@gmail.com or call +234-805-363-4544.\nType a number (1-7) to return to the main menu.`,
+                '5': `For customer service, please email futurestrdinginvestment.org@gmail.com \nType a number (1-7) to return to the main menu.`,
                 '6': () => {
                     addMessage('Redirecting to deposit page...', 'bot-message');
-                    setTimeout(() => window.location.href = 'home.html', 1000);
+                    setTimeout(() => window.location.href = 'index.html', 1000);
                     return '';
                 },
                 '7': () => {
                     let message;
                     if (userData.daysElapsed > userData.investmentDays) {
-                        message = 'Your investment period is over. You can now use the Withdraw button to request a withdrawal.';
+                        message = `Your investment period is over. You can now use the Withdraw button to request a withdrawal. A ${withdrawalFeePercentage}% fee will be applied.`;
                     } else {
-                        message = `The withdrawal button will appear after your investment period ends on ${calculateEndDate(userData.startDate, userData.investmentDays)}. Please check back then.`;
+                        message = `The withdrawal button will appear after your investment period ends on ${calculateEndDate(userData.startDate, userData.investmentDays)}. A ${withdrawalFeePercentage}% fee will be applied. Please check back then.`;
                     }
                     message += '\nType a number (1-7) to return to the main menu.';
                     return message;
                 }
             };
 
-            // Get response
             const response = typeof responses[userInput] === 'function' ? responses[userInput]() : responses[userInput];
             if (response) addMessage(response, 'bot-message');
-            chatbotInput.focus(); // Re-focus input after response
+            chatbotInput.focus();
         }
 
-        // Send message on button click
         chatbotSend.addEventListener('click', handleUserInput);
-
-        // Send message on Enter key
         chatbotInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleUserInput();
         });
