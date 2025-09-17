@@ -685,7 +685,7 @@
         // Deposit button
         const depositBtn = document.getElementById('depositBtn');
         depositBtn.addEventListener('click', function() {
-            window.location.href = 'index.html';
+            window.location.href = 'home.html';
         });
 
         // Withdrawal button to show form
@@ -920,7 +920,7 @@
                 '5': `For customer service, please email futurestrdinginvestment.org@gmail.com \nType a number (1-7) to return to the main menu.`,
                 '6': () => {
                     addMessage('Redirecting to deposit page...', 'bot-message');
-                    setTimeout(() => window.location.href = 'index.html', 1000);
+                    setTimeout(() => window.location.href = 'home.html', 1000);
                     return '';
                 },
                 '7': () => {
